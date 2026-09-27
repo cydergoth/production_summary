@@ -9,6 +9,8 @@
     <Nullable>disable</Nullable>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <!-- Keep the builder's local paths out of the DLL (the PDB path is embedded in it). -->
+    <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
     <RestoreAdditionalProjectSources>
       https://api.nuget.org/v3/index.json;
       https://nuget.bepinex.dev/v3/index.json
