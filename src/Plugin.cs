@@ -10,7 +10,7 @@ namespace ProductionSummary
     {
         public const string Guid = "starvalor.productionsummary";
         public const string Name = "Production Summary";
-        public const string Version = "1.0.0";
+        public const string Version = "1.1.0";
 
         internal static ManualLogSource Log;
         internal static ConfigEntry<bool> IncludeUndiscovered;
