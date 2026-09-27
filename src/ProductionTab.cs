@@ -16,11 +16,17 @@ namespace ProductionSummary
         private const string PanelName = "ProductionSummaryPanel";
         private const string ButtonName = "BtnProduction";
 
+        // Lang.Get(0, 501) is the game's own translated "Production", used by the station module UI.
+        private const int ProductionLabelSection = 0;
+        private const int ProductionLabelCode = 501;
+
         public static ProductionTab Instance;
 
         private DockingUI dockingUI;
         private Transform btnPanel;
         private GameObject button;
+        private Text buttonLabel;
+        private bool buttonUppercase;
         private Image buttonBG;
         private float maxButtonWidth = 245f;
 
@@ -73,14 +79,29 @@ namespace ProductionSummary
             button.transform.SetAsLastSibling();
             maxButtonWidth = ((RectTransform)template).sizeDelta.x;
 
-            // The cloned label would otherwise reset itself to "Crafting" on language changes.
-            foreach (LangText lang in button.GetComponentsInChildren<LangText>(true))
+            // Point the cloned LangText at the game's own "Production" string instead of "Crafting",
+            // so the label is translated and follows language changes like the built-in tabs.
+            LangText[] langs = button.GetComponentsInChildren<LangText>(true);
+            for (int i = 1; i < langs.Length; i++)
             {
-                DestroyImmediate(lang);
+                DestroyImmediate(langs[i]);
             }
-            Text label = button.GetComponentInChildren<Text>(true);
-            bool upper = templateText.text == templateText.text.ToUpper();
-            label.text = upper ? "PRODUCTION" : "Production";
+            if (langs.Length > 0)
+            {
+                LangText lang = langs[0];
+                buttonLabel = lang.GetComponent<Text>();
+                lang.textSection = ProductionLabelSection;
+                lang.textCode = ProductionLabelCode;
+                lang.complement = "";
+                // Awake() registers the clone for language refreshes; it may not have run yet.
+                lang.Refresh();
+            }
+            else
+            {
+                buttonLabel = button.GetComponentInChildren<Text>(true);
+                buttonUppercase = templateText.text == templateText.text.ToUpper();
+                SetButtonLabel();
+            }
 
             Transform icon = button.transform.Find("Image");
             Sprite sprite = ObjManager.GetSprite("Sprites/welder");
@@ -334,6 +355,26 @@ namespace ProductionSummary
             }
         }
 
+        /// <summary>Called after the player changes the game language.</summary>
+        public void RefreshLabels()
+        {
+            SetButtonLabel();
+            if (gameObject.activeSelf)
+            {
+                Refresh();
+            }
+        }
+
+        private void SetButtonLabel()
+        {
+            // A LangText on the label refreshes itself when the language changes.
+            if (buttonLabel != null && buttonLabel.GetComponent<LangText>() == null)
+            {
+                string text = Lang.Get(ProductionLabelSection, ProductionLabelCode);
+                buttonLabel.text = buttonUppercase ? text.ToUpper() : text;
+            }
+        }
+
         private void Update()
         {
             if (Time.unscaledTime >= nextRefresh)
@@ -348,13 +389,12 @@ namespace ProductionSummary
             TSector sector = GameData.data?.GetCurrentSector();
             List<ProductionReport.StationReport> reports = ProductionReport.Build(dockingUI.station);
 
-            titleText.text = "SECTOR PRODUCTION" + (sector != null ? "  " + sector.coords : "");
+            titleText.text = Loc.Get(Loc.Title).ToUpper() + (sector != null ? "  " + sector.coords : "");
 
             int i = 0;
             if (reports.Count == 0)
             {
-                GetCard(i++).text = ColorSys.UITer +
-                    "No known bases in this sector are producing goods.</color>";
+                GetCard(i++).text = ColorSys.UITer + Loc.Get(Loc.NoBases) + "</color>";
             }
             foreach (ProductionReport.StationReport report in reports)
             {

@@ -1,0 +1,43 @@
+#=======================================================|
+#   Production Summary - Language File - German         |
+#=======================================================|
+#                   Instructions                        |
+#                                                       |
+# - Same format as the game's Language/*_main.txt files |
+# - Don't erase the numbers in front or the bar         |
+#   character at the end                                |
+# - <par1>, <par2> are replaced with values             |
+# - Save as UTF-8, named like the game's own file       |
+#   (german_main.txt, chinese_main.txt, ...)            |
+# - Missing entries fall back to English                |
+# - Drafted with AI; corrections by native speakers     |
+#   are welcome                                         |
+#=======================================================|
+[0] Production tab                                      |
+#=======================================================|
+000 Sektor-Produktion|
+001 Keine bekannte Basis in diesem Sektor produziert Waren.|
+002 Spielerbasis|
+003 (hier angedockt)|
+004 (inaktiv)|
+005 Nutzt das Lager von <par1>|
+006 nichts ausgewählt|
+007 raffiniert <par1>|
+008 Zyklus <par1>|
+009 auf Lager:|
+010 / Grenzwert <par1>|
+011 Aus Asteroid abgebaut, verbleibende Ressourcen:|
+012 Keine Materialien benötigt|
+013 Benötigt pro Zyklus:|
+014 Vorrat:|
+015 (+<par1> eingelagert)|
+016 = <par1> Zyklen|
+017 ohne Energie|
+018 produziert <par1>|
+019 Grenzwert erreicht|
+020 blockiert: Materialien fehlen|
+021 Gegenstand #<par1>|
+# ---- Short time units, as in 'cycle 30s' ------------ |
+022 <par1>s|
+023 <par1>min|
+024 <par1>h|

@@ -1,0 +1,43 @@
+#=======================================================|
+#   Production Summary - Language File - Korean         |
+#=======================================================|
+#                   Instructions                        |
+#                                                       |
+# - Same format as the game's Language/*_main.txt files |
+# - Don't erase the numbers in front or the bar         |
+#   character at the end                                |
+# - <par1>, <par2> are replaced with values             |
+# - Save as UTF-8, named like the game's own file       |
+#   (german_main.txt, chinese_main.txt, ...)            |
+# - Missing entries fall back to English                |
+# - Drafted with AI; corrections by native speakers     |
+#   are welcome                                         |
+#=======================================================|
+[0] Production tab                                      |
+#=======================================================|
+000 섹터 생산|
+001 이 섹터에서 물품을 생산 중인 알려진 기지가 없습니다.|
+002 플레이어 기지|
+003 (현재 도킹 중)|
+004 (비활성)|
+005 <par1>의 저장소 사용|
+006 선택 안 됨|
+007 <par1> 정제 중|
+008 주기 <par1>|
+009 재고:|
+010 / 한도 <par1>|
+011 소행성에서 채굴, 남은 자원:|
+012 재료 필요 없음|
+013 주기당 필요량:|
+014 공급:|
+015 (+<par1> 보관됨)|
+016 = <par1>주기|
+017 전력 없음|
+018 생산 중 <par1>|
+019 한도 도달|
+020 중단됨: 재료 부족|
+021 아이템 #<par1>|
+# ---- Short time units, as in 'cycle 30s' ------------ |
+022 <par1>초|
+023 <par1>분|
+024 <par1>시간|

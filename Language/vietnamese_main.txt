@@ -1,0 +1,43 @@
+#=======================================================|
+#   Production Summary - Language File - Vietnamese     |
+#=======================================================|
+#                   Instructions                        |
+#                                                       |
+# - Same format as the game's Language/*_main.txt files |
+# - Don't erase the numbers in front or the bar         |
+#   character at the end                                |
+# - <par1>, <par2> are replaced with values             |
+# - Save as UTF-8, named like the game's own file       |
+#   (german_main.txt, chinese_main.txt, ...)            |
+# - Missing entries fall back to English                |
+# - Drafted with AI; corrections by native speakers     |
+#   are welcome                                         |
+#=======================================================|
+[0] Production tab                                      |
+#=======================================================|
+000 Sản xuất trong khu vực|
+001 Không có căn cứ nào đã biết trong khu vực này đang sản xuất hàng hóa.|
+002 Căn cứ người chơi|
+003 (đang cập bến tại đây)|
+004 (không hoạt động)|
+005 Dùng kho của <par1>|
+006 chưa chọn gì|
+007 đang tinh luyện <par1>|
+008 chu kỳ <par1>|
+009 trong kho:|
+010 / giới hạn <par1>|
+011 Khai thác từ thiên thạch, tài nguyên còn lại:|
+012 Không cần nguyên liệu|
+013 Cần mỗi chu kỳ:|
+014 nguồn cung:|
+015 (+<par1> đã cất giữ)|
+016 = <par1> chu kỳ|
+017 không có điện|
+018 đang sản xuất <par1>|
+019 đã đạt giới hạn|
+020 đình trệ: thiếu nguyên liệu|
+021 vật phẩm #<par1>|
+# ---- Short time units, as in 'cycle 30s' ------------ |
+022 <par1> giây|
+023 <par1> phút|
+024 <par1> giờ|

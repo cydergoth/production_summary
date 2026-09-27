@@ -16,6 +16,8 @@ For each base the tab shows:
 
 The tab refreshes every second while it is open. It only reads game data. It never changes stations, stock or your save.
 
+The tab follows the game's language setting (**Setup → Language**). All 12 of the game's languages are included.
+
 ## Installation
 
 The mod needs **BepInEx 5**, the standard mod loader for Star Valor. If you already use other
@@ -43,7 +45,7 @@ Star Valor BepInEx mods, skip to step 2.
 1. Download **`ProductionSummary-<version>.zip`** from the
    [Releases page](https://github.com/cydergoth/production_summary/releases/latest).
 2. Extract it into the game folder (the same folder as `Star Valor.exe`). This creates
-   `BepInEx/plugins/ProductionSummary/ProductionSummary.dll`.
+   `BepInEx/plugins/ProductionSummary/`, which holds `ProductionSummary.dll` and a `Language` folder.
 3. Start the game and dock at any station. A **PRODUCTION** tab appears after **CRAFTING**.
 
 ### Checking it worked
@@ -60,7 +62,8 @@ please [open an issue](https://github.com/cydergoth/production_summary/issues) a
 
 ### Updating
 
-Download the new release and extract it over the old one, replacing `ProductionSummary.dll`.
+Download the new release and extract it over the old one, replacing the files in
+`BepInEx/plugins/ProductionSummary/`. If you edited a language file, back it up first.
 
 ### Uninstalling
 
@@ -80,6 +83,33 @@ Edit it while the game is closed.
 | `IncludeUndiscoveredBases` | `false` | Also list bases you have not discovered yet |
 | `IncludeIdleModules` | `false` | Also list production modules with no product selected |
 | `RefreshSeconds` | `1` | Refresh interval while the tab is open |
+
+## Translations
+
+The mod reads the game's language setting and loads its own text from
+`BepInEx/plugins/ProductionSummary/Language/<language>_main.txt`. These files use the same format
+and names as the game's own `Language` folder (`german_main.txt`, `chinese_main.txt`, ...):
+
+```
+000 Sector Production|
+005 Uses storage of <par1>|
+```
+
+- Each entry is a three-digit number, a space, the text, and a `|` at the end.
+- Lines that start with `#` are comments.
+- `<par1>` is replaced with a value, such as a base name or a number.
+- Save the file as UTF-8.
+
+Item, module, faction and base names come from the game, so they are already translated. The
+**PRODUCTION** tab button uses the game's own translation of "Production".
+
+The mod looks entries up by their number. If a file leaves an entry out, or the language has no
+file, the mod uses the English text built into the DLL. Changing the language in game updates the
+tab straight away.
+
+The non-English files were drafted with AI and may read awkwardly. To fix a translation or add a
+language, copy `english_main.txt`, rename it to the game's name for that language, and translate
+the text after each number. Please send corrections as a pull request or an issue.
 
 ## Compatibility
 
@@ -115,6 +145,10 @@ Harmony postfixes on the game's `DockingUI` class:
 - `ShowHideDockingButtons`: shows the button in services mode and resizes the tab buttons to fit.
 - `OpenPanel(5)`: opens the panel. `ClosePanels` closes it, and `SetButtonBackgroundColors`
   highlights the button.
+
+A postfix on `Lang.SetLanguageTo` redraws the tab when the language changes. The button label
+keeps the game's `LangText` component, pointed at `Lang.Get(0, 501)`, so the game relabels it
+itself.
 
 Production data comes from each station's `SM_Fabricator` modules and their subclasses. Supply is
 read through `Station.GetItemStock()`, which follows cargo links. These are the same checks the game

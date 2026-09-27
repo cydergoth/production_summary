@@ -11,7 +11,7 @@ STAGE=$(mktemp -d)
 trap 'rm -rf "$STAGE"' EXIT
 PLUGIN_DIR="$STAGE/BepInEx/plugins/ProductionSummary"
 mkdir -p "$PLUGIN_DIR"
-cp bin/Release/ProductionSummary.dll README.md LICENSE "$PLUGIN_DIR/"
+cp -r bin/Release/ProductionSummary.dll bin/Release/Language README.md LICENSE "$PLUGIN_DIR/"
 
 mkdir -p dist
 ZIP="$PWD/dist/ProductionSummary-$VERSION.zip"

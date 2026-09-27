@@ -1,0 +1,43 @@
+#=======================================================|
+#   Production Summary - Language File - Italian        |
+#=======================================================|
+#                   Instructions                        |
+#                                                       |
+# - Same format as the game's Language/*_main.txt files |
+# - Don't erase the numbers in front or the bar         |
+#   character at the end                                |
+# - <par1>, <par2> are replaced with values             |
+# - Save as UTF-8, named like the game's own file       |
+#   (german_main.txt, chinese_main.txt, ...)            |
+# - Missing entries fall back to English                |
+# - Drafted with AI; corrections by native speakers     |
+#   are welcome                                         |
+#=======================================================|
+[0] Production tab                                      |
+#=======================================================|
+000 Produzione del settore|
+001 Nessuna base conosciuta in questo settore sta producendo merci.|
+002 Base del giocatore|
+003 (attraccato qui)|
+004 (inattiva)|
+005 Usa il magazzino di <par1>|
+006 nessuna selezione|
+007 raffinazione di <par1>|
+008 ciclo <par1>|
+009 in magazzino:|
+010 / limite <par1>|
+011 Estratto da asteroide, risorse rimanenti:|
+012 Nessun materiale richiesto|
+013 Necessari per ciclo:|
+014 scorta:|
+015 (+<par1> depositati)|
+016 = <par1> cicli|
+017 senza energia|
+018 in produzione <par1>|
+019 limite raggiunto|
+020 fermo: materiali mancanti|
+021 oggetto n. <par1>|
+# ---- Short time units, as in 'cycle 30s' ------------ |
+022 <par1>s|
+023 <par1>min|
+024 <par1>h|

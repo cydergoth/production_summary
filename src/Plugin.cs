@@ -27,7 +27,9 @@ namespace ProductionSummary
             RefreshSeconds = Config.Bind("General", "RefreshSeconds", 1f,
                 "How often the Production tab refreshes while it is open.");
 
-            new Harmony(Guid).PatchAll(typeof(DockingUIPatches));
+            var harmony = new Harmony(Guid);
+            harmony.PatchAll(typeof(DockingUIPatches));
+            harmony.PatchAll(typeof(LangPatches));
             Log.LogInfo($"{Name} {Version} loaded");
         }
     }

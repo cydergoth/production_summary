@@ -1,0 +1,43 @@
+#=======================================================|
+#   Production Summary - Language File - Chinese (Simplified)|
+#=======================================================|
+#                   Instructions                        |
+#                                                       |
+# - Same format as the game's Language/*_main.txt files |
+# - Don't erase the numbers in front or the bar         |
+#   character at the end                                |
+# - <par1>, <par2> are replaced with values             |
+# - Save as UTF-8, named like the game's own file       |
+#   (german_main.txt, chinese_main.txt, ...)            |
+# - Missing entries fall back to English                |
+# - Drafted with AI; corrections by native speakers     |
+#   are welcome                                         |
+#=======================================================|
+[0] Production tab                                      |
+#=======================================================|
+000 星域生产|
+001 本星域内没有已知的基地正在生产货物。|
+002 玩家基地|
+003 （当前停靠）|
+004 （未激活）|
+005 使用<par1>的仓库|
+006 未选择|
+007 精炼<par1>|
+008 周期 <par1>|
+009 库存：|
+010 / 限制 <par1>|
+011 从小行星开采，剩余资源：|
+012 无需材料|
+013 每周期所需：|
+014 供应：|
+015 （+<par1> 已储存）|
+016 = <par1> 个周期|
+017 未供电|
+018 生产中 <par1>|
+019 已达限制|
+020 停滞：缺少材料|
+021 物品 #<par1>|
+# ---- Short time units, as in 'cycle 30s' ------------ |
+022 <par1>秒|
+023 <par1>分钟|
+024 <par1>小时|

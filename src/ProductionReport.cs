@@ -101,16 +101,17 @@ namespace ProductionSummary
             }
             if (station == dockedStation)
             {
-                sb.Append("  ").Append(ColorSys.cyan).Append("(docked here)</color>");
+                sb.Append("  ").Append(ColorSys.cyan).Append(Loc.Get(Loc.DockedHere)).Append("</color>");
             }
             if (!station.InActivity)
             {
-                sb.Append("  ").Append(ColorSys.infoNeg).Append("(inactive)</color>");
+                sb.Append("  ").Append(ColorSys.infoNeg).Append(Loc.Get(Loc.Inactive)).Append("</color>");
             }
             if (station.HasCargoLink && station.stockLinkedStation != null)
             {
-                sb.Append("\n").Append(ColorSys.UITer).Append("Uses storage of ")
-                  .Append(station.stockLinkedStation.stationName(withLevel: false)).Append("</color>");
+                sb.Append("\n").Append(ColorSys.UITer)
+                  .Append(Loc.Get(Loc.UsesStorageOf, station.stockLinkedStation.stationName(withLevel: false)))
+                  .Append("</color>");
             }
 
             foreach (SM_Fabricator fab in fabricators)
@@ -127,36 +128,40 @@ namespace ProductionSummary
             sb.Append("\n<b>").Append(fab.Name).Append("</b>: ");
             if (product == null)
             {
-                sb.Append(ColorSys.UITer).Append("nothing selected</color>");
+                sb.Append(ColorSys.UITer).Append(Loc.Get(Loc.NothingSelected)).Append("</color>");
                 return;
             }
 
+            string productName = "<b>" + ItemDB.GetItemNameModified(product, 0) + "</b>";
             if (fab is SM_Refinery)
             {
-                sb.Append("refining ");
+                sb.Append(Loc.Get(Loc.Refining, productName));
             }
-            else if (fab.ProductionYield > 1)
+            else
             {
-                sb.Append("<b>").Append(fab.ProductionYield).Append("x</b> ");
+                if (fab.ProductionYield > 1)
+                {
+                    sb.Append("<b>").Append(fab.ProductionYield).Append("x</b> ");
+                }
+                sb.Append(productName);
             }
-            sb.Append("<b>").Append(ItemDB.GetItemNameModified(product, 0)).Append("</b>");
             sb.Append("   ").Append(StatusString(fab));
-            sb.Append("   ").Append(ColorSys.UITer).Append("cycle ")
-              .Append(FormatTime(fab.ProductionTime)).Append("</color>");
+            sb.Append("   ").Append(ColorSys.UITer).Append(Loc.Get(Loc.Cycle, FormatTime(fab.ProductionTime)))
+              .Append("</color>");
 
             if (!(fab is SM_Refinery))
             {
-                sb.Append("   ").Append(ColorSys.UITer).Append("in stock: </color>")
+                sb.Append("   ").Append(ColorSys.UITer).Append(Loc.Get(Loc.InStock)).Append(" </color>")
                   .Append(station.GetItemStationStock(product));
                 if (fab.HasProductionLimit && fab.productionLimit > 0)
                 {
-                    sb.Append(ColorSys.UITer).Append(" / limit ").Append(fab.productionLimit).Append("</color>");
+                    sb.Append(ColorSys.UITer).Append(" ").Append(Loc.Get(Loc.Limit, fab.productionLimit)).Append("</color>");
                 }
             }
 
             if (fab is SM_Mining mining)
             {
-                sb.Append("\n    ").Append(ColorSys.UITer).Append("Mined from asteroid, resources left: </color>")
+                sb.Append("\n    ").Append(ColorSys.UITer).Append(Loc.Get(Loc.ResourcesLeft)).Append(" </color>")
                   .Append(mining.ResourcesLeft);
                 return;
             }
@@ -164,11 +169,11 @@ namespace ProductionSummary
             List<ItemResource> materials = MaterialsOf(fab);
             if (materials == null || materials.Count == 0)
             {
-                sb.Append("\n    ").Append(ColorSys.UITer).Append("No materials required</color>");
+                sb.Append("\n    ").Append(ColorSys.UITer).Append(Loc.Get(Loc.NoMaterials)).Append("</color>");
                 return;
             }
 
-            sb.Append("\n    ").Append(ColorSys.UITer).Append("Needs per cycle:</color>");
+            sb.Append("\n    ").Append(ColorSys.UITer).Append(Loc.Get(Loc.NeedsPerCycle)).Append("</color>");
             foreach (ItemResource material in materials)
             {
                 sb.Append("\n      ").Append(MaterialLine(station, material));
@@ -188,7 +193,7 @@ namespace ProductionSummary
         private static string MaterialLine(Station station, ItemResource material)
         {
             Item item = material.AsItem;
-            string name = item != null ? ItemDB.GetItemNameModified(item, 0) : ("item #" + material.itemID);
+            string name = item != null ? ItemDB.GetItemNameModified(item, 0) : Loc.Get(Loc.UnknownItem, material.itemID);
 
             // GetItemStock() follows cargo links, so this is the stock the base itself consumes from.
             int stock = item != null ? station.GetItemStock().GetStockCount(item, null) : 0;
@@ -202,16 +207,16 @@ namespace ProductionSummary
 
             var sb = new StringBuilder();
             sb.Append("<b>").Append(material.quantity).Append("x</b> ").Append(name)
-              .Append("  ").Append(ColorSys.UITer).Append("supply: </color>")
+              .Append("  ").Append(ColorSys.UITer).Append(Loc.Get(Loc.Supply)).Append(" </color>")
               .Append(color).Append("<b>").Append(stock).Append("</b></color>");
             if (stash > 0)
             {
-                sb.Append(ColorSys.UITer).Append(" (+").Append(stash).Append(" stashed)</color>");
+                sb.Append(ColorSys.UITer).Append(" ").Append(Loc.Get(Loc.Stashed, stash)).Append("</color>");
             }
             if (material.quantity > 0)
             {
-                sb.Append("  ").Append(ColorSys.UITer).Append("= ").Append(available / material.quantity)
-                  .Append(" cycles</color>");
+                sb.Append("  ").Append(ColorSys.UITer).Append(Loc.Get(Loc.Cycles, available / material.quantity))
+                  .Append("</color>");
             }
             return sb.ToString();
         }
@@ -220,17 +225,17 @@ namespace ProductionSummary
         {
             if (!fab.IsPowered)
             {
-                return ColorSys.infoNeg + "[unpowered]</color>";
+                return ColorSys.infoNeg + "[" + Loc.Get(Loc.Unpowered) + "]</color>";
             }
             if (fab.IsProducing)
             {
-                return ColorSys.infoPos + "[producing " + fab.ProductionProgressPercentString + "]</color>";
+                return ColorSys.infoPos + "[" + Loc.Get(Loc.Producing, fab.ProductionProgressPercentString) + "]</color>";
             }
             if (fab.ProductionLimitReached)
             {
-                return ColorSys.infoNeg2 + "[limit reached]</color>";
+                return ColorSys.infoNeg2 + "[" + Loc.Get(Loc.LimitReached) + "]</color>";
             }
-            return ColorSys.infoNeg + "[stalled: missing materials]</color>";
+            return ColorSys.infoNeg + "[" + Loc.Get(Loc.Stalled) + "]</color>";
         }
 
         private static string StationColor(Station station)
@@ -251,7 +256,7 @@ namespace ProductionSummary
         {
             if (station.PlayerOwned)
             {
-                return "Player base";
+                return Loc.Get(Loc.PlayerBase);
             }
             try
             {
@@ -267,13 +272,13 @@ namespace ProductionSummary
         {
             if (seconds < 120f)
             {
-                return seconds.ToString("0.#") + "s";
+                return Loc.Get(Loc.Seconds, seconds.ToString("0.#"));
             }
             if (seconds < 7200f)
             {
-                return (seconds / 60f).ToString("0.#") + "m";
+                return Loc.Get(Loc.Minutes, (seconds / 60f).ToString("0.#"));
             }
-            return (seconds / 3600f).ToString("0.#") + "h";
+            return Loc.Get(Loc.Hours, (seconds / 3600f).ToString("0.#"));
         }
     }
 }

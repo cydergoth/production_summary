@@ -1,0 +1,43 @@
+#=======================================================|
+#   Production Summary - Language File - Russian        |
+#=======================================================|
+#                   Instructions                        |
+#                                                       |
+# - Same format as the game's Language/*_main.txt files |
+# - Don't erase the numbers in front or the bar         |
+#   character at the end                                |
+# - <par1>, <par2> are replaced with values             |
+# - Save as UTF-8, named like the game's own file       |
+#   (german_main.txt, chinese_main.txt, ...)            |
+# - Missing entries fall back to English                |
+# - Drafted with AI; corrections by native speakers     |
+#   are welcome                                         |
+#=======================================================|
+[0] Production tab                                      |
+#=======================================================|
+000 Производство сектора|
+001 Ни одна известная база в этом секторе не производит товары.|
+002 База игрока|
+003 (вы пристыкованы здесь)|
+004 (неактивна)|
+005 Использует склад базы <par1>|
+006 ничего не выбрано|
+007 переработка: <par1>|
+008 цикл <par1>|
+009 на складе:|
+010 / лимит <par1>|
+011 Добывается с астероида, осталось ресурсов:|
+012 Материалы не требуются|
+013 Нужно за цикл:|
+014 запас:|
+015 (+<par1> на хранении)|
+016 = циклов: <par1>|
+017 нет питания|
+018 производство <par1>|
+019 лимит достигнут|
+020 простой: не хватает материалов|
+021 предмет №<par1>|
+# ---- Short time units, as in 'cycle 30s' ------------ |
+022 <par1> с.|
+023 <par1> мин.|
+024 <par1> ч.|

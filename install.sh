@@ -9,5 +9,5 @@ if [ ! -d "$GAME_DIR/BepInEx" ]; then
   exit 1
 fi
 mkdir -p "$GAME_DIR/BepInEx/plugins/ProductionSummary"
-cp bin/Release/ProductionSummary.dll "$GAME_DIR/BepInEx/plugins/ProductionSummary/"
+cp -r bin/Release/ProductionSummary.dll bin/Release/Language "$GAME_DIR/BepInEx/plugins/ProductionSummary/"
 echo "Installed to $GAME_DIR/BepInEx/plugins/ProductionSummary/"
