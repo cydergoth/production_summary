@@ -129,3 +129,8 @@ content, such as Nexus Mods, tag it as AI-generated code.
 
 Star Valor is made by Rafael Burgos. This is an unofficial fan mod, and the developer does not
 endorse or support it.
+
+## License
+
+[MIT](LICENSE) © 2026 cydergoth. The license covers this mod's source code only. Star Valor and its
+assets belong to their developer, and BepInEx has its own license.
