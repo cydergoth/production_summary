@@ -4,6 +4,9 @@ Adds a **Production** tab to the station docking screen, next to Lobby / Trade /
 It shows every base in your current sector that is producing goods, what each base is making, and
 whether it has the materials to keep going.
 
+> **Requires the [Base Building DLC](https://store.steampowered.com/app/2755940/).** The tab is
+> for managing your own bases, which only the DLC lets you build or capture.
+
 For each base the tab shows:
 
 - the base name, faction, and whether you are docked there, the base is inactive, or it uses another base's storage (cargo link)
@@ -31,6 +34,8 @@ The tab refreshes every second while it is open. It only reads game data. It nev
 The tab follows the game's language setting (**Setup → Language**). All 12 of the game's languages are included.
 
 ## Installation
+
+You need Star Valor with the **Base Building DLC**.
 
 The mod needs **BepInEx 5**, the standard mod loader for Star Valor. If you already use other
 Star Valor BepInEx mods, skip to step 2.
@@ -127,6 +132,7 @@ the text after each number. Please send corrections as a pull request or an issu
 
 ## Compatibility
 
+- Requires the Base Building DLC.
 - Built against Star Valor Steam build 24937123 (Unity 2019.4.41f1) and BepInEx 5.4.23.2.
 - Achievements are unaffected. The game has no mod detection, and this mod doesn't touch perks,
   stats or Steam.
@@ -149,7 +155,10 @@ dotnet build -c Release -p:GameDir="/path/to/Star Valor"
 ```
 
 `GAME_DIR` (for the scripts) and `-p:GameDir` (for `dotnet build`) default to the standard Linux
-Steam location. The project file also checks the default Windows Steam path.
+Steam location. `install.sh` also warns if it can't find a Steam account that owns the Base
+Building DLC. The DLC has no files of its own, so the script looks for its ownership ticket in
+Steam's `userdata/<account>/config/localconfig.vdf`. That is undocumented, so the script only warns
+and installs anyway. Set `STEAM_DIR` if Steam isn't in `~/.local/share/Steam`. The project file also checks the default Windows Steam path.
 
 ### How it works
 
