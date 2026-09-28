@@ -29,6 +29,8 @@ Two checkboxes in the tab's header change what it shows. The tab remembers both 
 - **Hide mining & refineries** (top right) hides Mining and Refinery modules, and bases that only
   mine or refine drop out of the list.
 
+![The compact view: one line per base, with red dots on the bases that have a stalled module and green on the rest](docs/production_compact.png)
+
 The tab refreshes every second while it is open. It only reads game data. It never changes stations, stock or your save.
 
 The tab follows the game's language setting (**Setup → Language**). All 12 of the game's languages are included.
