@@ -41,5 +41,6 @@
 022 <par1>秒|
 023 <par1>分|
 024 <par1>時間|
-# ---- Checkbox on the Production tab ----------------- |
+# ---- Checkboxes on the Production tab --------------- |
 025 採掘と精錬を非表示|
+026 コンパクト表示|

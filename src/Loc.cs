@@ -45,6 +45,7 @@ namespace ProductionSummary
         public const int Minutes = 23;
         public const int Hours = 24;
         public const int HideMining = 25;
+        public const int CompactView = 26;
 
         private const string EnglishResource = "ProductionSummary.Language.english_main.txt";
 

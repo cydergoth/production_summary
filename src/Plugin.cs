@@ -17,6 +17,7 @@ namespace ProductionSummary
         internal static ConfigEntry<bool> IncludeIdleModules;
         internal static ConfigEntry<float> RefreshSeconds;
         internal static ConfigEntry<bool> HideMining;
+        internal static ConfigEntry<bool> CompactView;
 
         private void Awake()
         {
@@ -29,6 +30,8 @@ namespace ProductionSummary
                 "How often the Production tab refreshes while it is open.");
             HideMining = Config.Bind("General", "HideMining", false,
                 "Hide Mining and Refinery modules. Set by the checkbox on the Production tab.");
+            CompactView = Config.Bind("General", "CompactView", false,
+                "Show one line per base instead of the detailed view. Set by the checkbox on the Production tab.");
 
             var harmony = new Harmony(Guid);
             harmony.PatchAll(typeof(DockingUIPatches));

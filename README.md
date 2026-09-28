@@ -14,8 +14,17 @@ For each base the tab shows:
 - every material needed per cycle and the supply that base can see: its own storage (or the storage it is cargo-linked to), plus your stash for player bases. Green means there is enough for a cycle and red means there isn't. It also shows how many cycles the supply lasts.
 - asteroid resources left, for mining modules
 
-The **Hide mining & refineries** checkbox at the top right of the tab hides Mining and Refinery
-modules, and bases that only mine or refine drop out of the list. The tab remembers the setting.
+![The Production tab showing a docked player base, its workshop stalled for Energy Cells, and nearby mining bases](docs/production.png)
+
+Two checkboxes in the tab's header change what it shows. The tab remembers both settings.
+
+- **Compact view** (top left) shows one line per base instead of the detailed cards: a status dot,
+  the base name, and the goods it makes. The dot is green when everything is producing, amber when
+  a production limit is reached, red when something is stalled or unpowered, and grey for an
+  inactive base or one with nothing selected. Goods that aren't producing are tagged, for example
+  *Microchips (stalled: missing materials)*, so one stalled module can't hide behind a busy one.
+- **Hide mining & refineries** (top right) hides Mining and Refinery modules, and bases that only
+  mine or refine drop out of the list.
 
 The tab refreshes every second while it is open. It only reads game data. It never changes stations, stock or your save.
 
@@ -87,6 +96,7 @@ Edit it while the game is closed.
 | `IncludeIdleModules` | `false` | Also list production modules with no product selected |
 | `RefreshSeconds` | `1` | Refresh interval while the tab is open |
 | `HideMining` | `false` | Hide Mining and Refinery modules. The checkbox on the tab changes this |
+| `CompactView` | `false` | Show one line per base. The checkbox on the tab changes this |
 
 ## Translations
 

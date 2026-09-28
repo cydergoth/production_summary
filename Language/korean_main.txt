@@ -41,5 +41,6 @@
 022 <par1>초|
 023 <par1>분|
 024 <par1>시간|
-# ---- Checkbox on the Production tab ----------------- |
+# ---- Checkboxes on the Production tab --------------- |
 025 채굴 및 정제 숨기기|
+026 간단히 보기|

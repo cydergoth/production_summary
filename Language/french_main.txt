@@ -41,5 +41,6 @@
 022 <par1>s|
 023 <par1>min|
 024 <par1>h|
-# ---- Checkbox on the Production tab ----------------- |
+# ---- Checkboxes on the Production tab --------------- |
 025 Masquer extraction et raffineries|
+026 Vue compacte|

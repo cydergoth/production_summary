@@ -41,5 +41,6 @@
 022 <par1> с.|
 023 <par1> мин.|
 024 <par1> ч.|
-# ---- Checkbox on the Production tab ----------------- |
+# ---- Checkboxes on the Production tab --------------- |
 025 Скрыть добычу и переработку|
+026 Компактный вид|

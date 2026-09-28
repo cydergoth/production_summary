@@ -5,9 +5,19 @@ using System.Text;
 
 namespace ProductionSummary
 {
+    /// <summary>A production module's state, ordered from best to worst.</summary>
+    internal enum ModuleStatus
+    {
+        Idle,
+        Producing,
+        LimitReached,
+        Stalled,
+        Unpowered,
+    }
+
     /// <summary>
     /// Collects the production state of every base in the current sector and formats it as
-    /// Unity rich text.
+    /// Unity rich text: a detailed card per base, or a single line per base in compact mode.
     /// </summary>
     internal static class ProductionReport
     {
@@ -15,9 +25,14 @@ namespace ProductionSummary
         {
             public Station Station;
             public string Text;
+
+            /// <summary>The base's worst module status, for the compact view's status icon.</summary>
+            public ModuleStatus Status;
+
+            public bool Inactive;
         }
 
-        public static List<StationReport> Build(Station dockedStation)
+        public static List<StationReport> Build(Station dockedStation, bool compact)
         {
             var reports = new List<StationReport>();
             TSector sector = GameData.data?.GetCurrentSector();
@@ -31,19 +46,17 @@ namespace ProductionSummary
                 .ThenByDescending(s => s.PlayerOwned)
                 .ThenBy(s => s.stationName(withLevel: false)))
             {
-                string text;
                 try
                 {
-                    text = DescribeStation(station, dockedStation);
+                    StationReport report = DescribeStation(station, dockedStation, compact);
+                    if (report != null)
+                    {
+                        reports.Add(report);
+                    }
                 }
                 catch (Exception e)
                 {
                     Plugin.Log.LogWarning($"Could not read production of station {station.id}: {e}");
-                    continue;
-                }
-                if (text != null)
-                {
-                    reports.Add(new StationReport { Station = station, Text = text });
                 }
             }
             return reports;
@@ -80,7 +93,7 @@ namespace ProductionSummary
         }
 
         /// <summary>Returns null when the station has nothing to report.</summary>
-        private static string DescribeStation(Station station, Station dockedStation)
+        private static StationReport DescribeStation(Station station, Station dockedStation, bool compact)
         {
             var fabricators = station.modules
                 .OfType<SM_Fabricator>()
@@ -93,6 +106,67 @@ namespace ProductionSummary
                 return null;
             }
 
+            var report = new StationReport
+            {
+                Station = station,
+                Status = fabricators.Max(StatusOf),
+                Inactive = !station.InActivity,
+            };
+            report.Text = compact ? CompactLine(station, dockedStation, fabricators) : DetailedCard(station, dockedStation, fabricators);
+            return report;
+        }
+
+        /// <summary>
+        /// "Name [level] (docked here)   Product, Product (stalled), ..." on one line. The status
+        /// icon in front of the line shows the worst status; products that aren't producing are
+        /// tagged so a stalled module can't hide behind a busy one.
+        /// </summary>
+        private static string CompactLine(Station station, Station dockedStation, List<SM_Fabricator> fabricators)
+        {
+            var sb = new StringBuilder();
+            sb.Append("<b>").Append(StationColor(station))
+              .Append(station.stationName(withLevel: true)).Append("</color></b>");
+            if (station == dockedStation)
+            {
+                sb.Append(" ").Append(ColorSys.cyan).Append(Loc.Get(Loc.DockedHere)).Append("</color>");
+            }
+            if (!station.InActivity)
+            {
+                sb.Append(" ").Append(ColorSys.infoNeg).Append(Loc.Get(Loc.Inactive)).Append("</color>");
+            }
+            sb.Append("   ");
+            for (int i = 0; i < fabricators.Count; i++)
+            {
+                SM_Fabricator fab = fabricators[i];
+                if (i > 0)
+                {
+                    sb.Append(", ");
+                }
+                if (fab.item == null)
+                {
+                    sb.Append(ColorSys.UITer).Append(Loc.Get(Loc.NothingSelected)).Append("</color>");
+                    continue;
+                }
+                string productName = ItemDB.GetItemNameModified(fab.item, 0);
+                sb.Append(fab is SM_Refinery ? Loc.Get(Loc.Refining, productName) : productName);
+                switch (StatusOf(fab))
+                {
+                    case ModuleStatus.Unpowered:
+                        sb.Append(" ").Append(ColorSys.infoNeg).Append("(").Append(Loc.Get(Loc.Unpowered)).Append(")</color>");
+                        break;
+                    case ModuleStatus.LimitReached:
+                        sb.Append(" ").Append(ColorSys.infoNeg2).Append("(").Append(Loc.Get(Loc.LimitReached)).Append(")</color>");
+                        break;
+                    case ModuleStatus.Stalled:
+                        sb.Append(" ").Append(ColorSys.infoNeg).Append("(").Append(Loc.Get(Loc.Stalled)).Append(")</color>");
+                        break;
+                }
+            }
+            return sb.ToString();
+        }
+
+        private static string DetailedCard(Station station, Station dockedStation, List<SM_Fabricator> fabricators)
+        {
             var sb = new StringBuilder();
             sb.Append("<size=16><b>").Append(StationColor(station))
               .Append(station.stationName(withLevel: true)).Append("</color></b></size>");
@@ -223,21 +297,36 @@ namespace ProductionSummary
             return sb.ToString();
         }
 
-        private static string StatusString(SM_Fabricator fab)
+        public static ModuleStatus StatusOf(SM_Fabricator fab)
         {
+            if (fab.item == null)
+            {
+                return ModuleStatus.Idle;
+            }
             if (!fab.IsPowered)
             {
-                return ColorSys.infoNeg + "[" + Loc.Get(Loc.Unpowered) + "]</color>";
+                return ModuleStatus.Unpowered;
             }
             if (fab.IsProducing)
             {
-                return ColorSys.infoPos + "[" + Loc.Get(Loc.Producing, fab.ProductionProgressPercentString) + "]</color>";
+                return ModuleStatus.Producing;
             }
-            if (fab.ProductionLimitReached)
+            return fab.ProductionLimitReached ? ModuleStatus.LimitReached : ModuleStatus.Stalled;
+        }
+
+        private static string StatusString(SM_Fabricator fab)
+        {
+            switch (StatusOf(fab))
             {
-                return ColorSys.infoNeg2 + "[" + Loc.Get(Loc.LimitReached) + "]</color>";
+                case ModuleStatus.Unpowered:
+                    return ColorSys.infoNeg + "[" + Loc.Get(Loc.Unpowered) + "]</color>";
+                case ModuleStatus.Producing:
+                    return ColorSys.infoPos + "[" + Loc.Get(Loc.Producing, fab.ProductionProgressPercentString) + "]</color>";
+                case ModuleStatus.LimitReached:
+                    return ColorSys.infoNeg2 + "[" + Loc.Get(Loc.LimitReached) + "]</color>";
+                default:
+                    return ColorSys.infoNeg + "[" + Loc.Get(Loc.Stalled) + "]</color>";
             }
-            return ColorSys.infoNeg + "[" + Loc.Get(Loc.Stalled) + "]</color>";
         }
 
         private static string StationColor(Station station)

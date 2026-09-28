@@ -33,9 +33,21 @@ namespace ProductionSummary
         private Text titleText;
         private RectTransform content;
         private ScrollRect scrollRect;
+        private VerticalLayoutGroup contentLayout;
         private Text hideMiningLabel;
+        private Text compactLabel;
         private Font font;
         private readonly List<Text> cards = new List<Text>();
+        private readonly List<CompactRow> rows = new List<CompactRow>();
+        private static Sprite statusDot;
+
+        /// <summary>One line of the compact view: a status icon and the text.</summary>
+        private class CompactRow
+        {
+            public GameObject Root;
+            public Image Icon;
+            public Text Text;
+        }
         private float nextRefresh;
 
         public static void Create(DockingUI dockingUI)
@@ -158,28 +170,41 @@ namespace ProductionSummary
             titleRT.anchoredPosition = new Vector2(0f, -6f);
             titleRT.sizeDelta = new Vector2(-20f, 30f);
 
-            BuildHideMiningToggle();
+            BuildToggles();
             BuildScrollView();
         }
 
-        /// <summary>A checkbox at the top right of the panel that hides Mining and Refinery modules.</summary>
-        private void BuildHideMiningToggle()
+        /// <summary>
+        /// The two checkboxes in the header: Compact view at the top left, Hide mining &amp; refineries
+        /// at the top right.
+        /// </summary>
+        private void BuildToggles()
         {
-            var go = new GameObject("HideMiningToggle", typeof(RectTransform));
+            compactLabel = BuildToggle("CompactViewToggle", rightSide: false, Plugin.CompactView.Value, OnCompactViewChanged);
+            compactLabel.text = Loc.Get(Loc.CompactView);
+            hideMiningLabel = BuildToggle("HideMiningToggle", rightSide: true, Plugin.HideMining.Value, OnHideMiningChanged);
+            hideMiningLabel.text = Loc.Get(Loc.HideMining);
+        }
+
+        /// <summary>A checkbox in a header corner, with its label on the inner side. Returns the label.</summary>
+        private Text BuildToggle(string name, bool rightSide, bool isOn, UnityEngine.Events.UnityAction<bool> onChanged)
+        {
+            float side = rightSide ? 1f : 0f;
+            var go = new GameObject(name, typeof(RectTransform));
             go.transform.SetParent(transform, false);
             var rt = (RectTransform)go.transform;
-            rt.anchorMin = new Vector2(1f, 1f);
-            rt.anchorMax = new Vector2(1f, 1f);
-            rt.pivot = new Vector2(1f, 1f);
-            rt.anchoredPosition = new Vector2(-14f, -10f);
+            rt.anchorMin = new Vector2(side, 1f);
+            rt.anchorMax = new Vector2(side, 1f);
+            rt.pivot = new Vector2(side, 1f);
+            rt.anchoredPosition = new Vector2(rightSide ? -14f : 14f, -10f);
             rt.sizeDelta = new Vector2(240f, 22f);
 
             var boxGO = new GameObject("Box", typeof(RectTransform));
             boxGO.transform.SetParent(go.transform, false);
             var boxRT = (RectTransform)boxGO.transform;
-            boxRT.anchorMin = new Vector2(1f, 0.5f);
-            boxRT.anchorMax = new Vector2(1f, 0.5f);
-            boxRT.pivot = new Vector2(1f, 0.5f);
+            boxRT.anchorMin = new Vector2(side, 0.5f);
+            boxRT.anchorMax = new Vector2(side, 0.5f);
+            boxRT.pivot = new Vector2(side, 0.5f);
             boxRT.sizeDelta = new Vector2(18f, 18f);
             var box = boxGO.AddComponent<Image>();
             box.color = new Color(1f, 1f, 1f, 0.15f);
@@ -195,22 +220,29 @@ namespace ProductionSummary
             check.color = new Color(0.55f, 0.85f, 1f);
             check.raycastTarget = false;
 
-            hideMiningLabel = CreateText("Label", go.transform, 13);
-            hideMiningLabel.alignment = TextAnchor.MiddleRight;
+            Text label = CreateText("Label", go.transform, 13);
+            label.alignment = rightSide ? TextAnchor.MiddleRight : TextAnchor.MiddleLeft;
             // Clicks on the label reach the Toggle on the parent, so the whole row is clickable.
-            hideMiningLabel.raycastTarget = true;
-            var labelRT = hideMiningLabel.rectTransform;
+            label.raycastTarget = true;
+            var labelRT = label.rectTransform;
             labelRT.anchorMin = Vector2.zero;
             labelRT.anchorMax = Vector2.one;
-            labelRT.offsetMin = Vector2.zero;
-            labelRT.offsetMax = new Vector2(-26f, 0f);
-            hideMiningLabel.text = Loc.Get(Loc.HideMining);
+            labelRT.offsetMin = new Vector2(rightSide ? 0f : 26f, 0f);
+            labelRT.offsetMax = new Vector2(rightSide ? -26f : 0f, 0f);
 
             var toggle = go.AddComponent<Toggle>();
             toggle.targetGraphic = box;
             toggle.graphic = check;
-            toggle.isOn = Plugin.HideMining.Value;
-            toggle.onValueChanged.AddListener(OnHideMiningChanged);
+            toggle.isOn = isOn;
+            toggle.onValueChanged.AddListener(onChanged);
+            return label;
+        }
+
+        private void OnCompactViewChanged(bool compact)
+        {
+            Plugin.CompactView.Value = compact;
+            Refresh();
+            scrollRect.verticalNormalizedPosition = 1f;
         }
 
         private void OnHideMiningChanged(bool hide)
@@ -250,6 +282,7 @@ namespace ProductionSummary
             content.pivot = new Vector2(0.5f, 1f);
             content.sizeDelta = Vector2.zero;
             var layout = contentGO.AddComponent<VerticalLayoutGroup>();
+            contentLayout = layout;
             layout.spacing = 6f;
             layout.padding = new RectOffset(0, 0, 0, 4);
             layout.childControlWidth = true;
@@ -337,6 +370,94 @@ namespace ProductionSummary
             return cards[index];
         }
 
+        private CompactRow GetRow(int index)
+        {
+            while (rows.Count <= index)
+            {
+                var rowGO = new GameObject("StationLine", typeof(RectTransform));
+                rowGO.transform.SetParent(content, false);
+                rowGO.AddComponent<Image>().color = new Color(1f, 1f, 1f, 0.05f);
+                var layout = rowGO.AddComponent<HorizontalLayoutGroup>();
+                layout.padding = new RectOffset(8, 10, 4, 4);
+                layout.spacing = 8f;
+                layout.childAlignment = TextAnchor.MiddleLeft;
+                layout.childControlWidth = true;
+                layout.childControlHeight = true;
+                layout.childForceExpandWidth = false;
+                layout.childForceExpandHeight = false;
+
+                var iconGO = new GameObject("Status", typeof(RectTransform));
+                iconGO.transform.SetParent(rowGO.transform, false);
+                var icon = iconGO.AddComponent<Image>();
+                icon.sprite = StatusDot();
+                icon.raycastTarget = false;
+                var iconLayout = iconGO.AddComponent<LayoutElement>();
+                iconLayout.minWidth = iconLayout.preferredWidth = 12f;
+                iconLayout.minHeight = iconLayout.preferredHeight = 12f;
+
+                Text text = CreateText("Text", rowGO.transform, 14);
+                text.gameObject.AddComponent<LayoutElement>().flexibleWidth = 1f;
+                rows.Add(new CompactRow { Root = rowGO, Icon = icon, Text = text });
+            }
+            return rows[index];
+        }
+
+        /// <summary>A small anti-aliased white circle, tinted per status. Unity's built-in UI sprites aren't available at runtime.</summary>
+        private static Sprite StatusDot()
+        {
+            if (statusDot != null)
+            {
+                return statusDot;
+            }
+            const int size = 32;
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false) { filterMode = FilterMode.Bilinear };
+            float radius = size / 2f - 1f;
+            var center = new Vector2(size / 2f - 0.5f, size / 2f - 0.5f);
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float alpha = Mathf.Clamp01(radius - Vector2.Distance(new Vector2(x, y), center) + 0.5f);
+                    texture.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
+                }
+            }
+            texture.Apply();
+            statusDot = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f));
+            return statusDot;
+        }
+
+        private static Color StatusColor(ProductionReport.StationReport report)
+        {
+            if (report.Inactive)
+            {
+                return TagColor(ColorSys.UITer, Color.gray);
+            }
+            switch (report.Status)
+            {
+                case ModuleStatus.Producing:
+                    return TagColor(ColorSys.infoPos, Color.green);
+                case ModuleStatus.LimitReached:
+                    return TagColor(ColorSys.infoNeg2, new Color(1f, 0.65f, 0f));
+                case ModuleStatus.Stalled:
+                case ModuleStatus.Unpowered:
+                    return TagColor(ColorSys.infoNeg, Color.red);
+                default:
+                    return TagColor(ColorSys.UITer, Color.gray);
+            }
+        }
+
+        /// <summary>The colour in one of the game's "&lt;color=#rrggbb&gt;" rich-text tags, so icons match the text.</summary>
+        private static Color TagColor(string tag, Color fallback)
+        {
+            int start = tag != null ? tag.IndexOf('#') : -1;
+            int end = start >= 0 ? tag.IndexOf('>', start) : -1;
+            if (end > start && ColorUtility.TryParseHtmlString(tag.Substring(start, end - start), out Color color))
+            {
+                return color;
+            }
+            return fallback;
+        }
+
         public void Open()
         {
             if (dockingUI.station == null)
@@ -420,6 +541,7 @@ namespace ProductionSummary
         {
             SetButtonLabel();
             hideMiningLabel.text = Loc.Get(Loc.HideMining);
+            compactLabel.text = Loc.Get(Loc.CompactView);
             if (gameObject.activeSelf)
             {
                 Refresh();
@@ -448,22 +570,49 @@ namespace ProductionSummary
         {
             nextRefresh = Time.unscaledTime + Mathf.Max(0.25f, Plugin.RefreshSeconds.Value);
             TSector sector = GameData.data?.GetCurrentSector();
-            List<ProductionReport.StationReport> reports = ProductionReport.Build(dockingUI.station);
+            bool compact = Plugin.CompactView.Value;
+            List<ProductionReport.StationReport> reports = ProductionReport.Build(dockingUI.station, compact);
 
             titleText.text = Loc.Get(Loc.Title).ToUpper() + (sector != null ? "  " + sector.coords : "");
+            contentLayout.spacing = compact ? 2f : 6f;
 
-            int i = 0;
-            if (reports.Count == 0)
+            int usedCards = 0;
+            int usedRows = 0;
+            string empty = reports.Count == 0 ? ColorSys.UITer + Loc.Get(Loc.NoBases) + "</color>" : null;
+            if (compact)
             {
-                GetCard(i++).text = ColorSys.UITer + Loc.Get(Loc.NoBases) + "</color>";
+                if (empty != null)
+                {
+                    CompactRow row = GetRow(usedRows++);
+                    row.Icon.gameObject.SetActive(false);
+                    row.Text.text = empty;
+                }
+                foreach (ProductionReport.StationReport report in reports)
+                {
+                    CompactRow row = GetRow(usedRows++);
+                    row.Icon.gameObject.SetActive(true);
+                    row.Icon.color = StatusColor(report);
+                    row.Text.text = report.Text;
+                }
             }
-            foreach (ProductionReport.StationReport report in reports)
+            else
             {
-                GetCard(i++).text = report.Text;
+                if (empty != null)
+                {
+                    GetCard(usedCards++).text = empty;
+                }
+                foreach (ProductionReport.StationReport report in reports)
+                {
+                    GetCard(usedCards++).text = report.Text;
+                }
             }
             for (int j = 0; j < cards.Count; j++)
             {
-                cards[j].transform.parent.gameObject.SetActive(j < i);
+                cards[j].transform.parent.gameObject.SetActive(j < usedCards);
+            }
+            for (int j = 0; j < rows.Count; j++)
+            {
+                rows[j].Root.SetActive(j < usedRows);
             }
         }
     }
