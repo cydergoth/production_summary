@@ -33,6 +33,7 @@ namespace ProductionSummary
         private Text titleText;
         private RectTransform content;
         private ScrollRect scrollRect;
+        private Text hideMiningLabel;
         private Font font;
         private readonly List<Text> cards = new List<Text>();
         private float nextRefresh;
@@ -157,7 +158,66 @@ namespace ProductionSummary
             titleRT.anchoredPosition = new Vector2(0f, -6f);
             titleRT.sizeDelta = new Vector2(-20f, 30f);
 
+            BuildHideMiningToggle();
             BuildScrollView();
+        }
+
+        /// <summary>A checkbox at the top right of the panel that hides Mining and Refinery modules.</summary>
+        private void BuildHideMiningToggle()
+        {
+            var go = new GameObject("HideMiningToggle", typeof(RectTransform));
+            go.transform.SetParent(transform, false);
+            var rt = (RectTransform)go.transform;
+            rt.anchorMin = new Vector2(1f, 1f);
+            rt.anchorMax = new Vector2(1f, 1f);
+            rt.pivot = new Vector2(1f, 1f);
+            rt.anchoredPosition = new Vector2(-14f, -10f);
+            rt.sizeDelta = new Vector2(240f, 22f);
+
+            var boxGO = new GameObject("Box", typeof(RectTransform));
+            boxGO.transform.SetParent(go.transform, false);
+            var boxRT = (RectTransform)boxGO.transform;
+            boxRT.anchorMin = new Vector2(1f, 0.5f);
+            boxRT.anchorMax = new Vector2(1f, 0.5f);
+            boxRT.pivot = new Vector2(1f, 0.5f);
+            boxRT.sizeDelta = new Vector2(18f, 18f);
+            var box = boxGO.AddComponent<Image>();
+            box.color = new Color(1f, 1f, 1f, 0.15f);
+
+            var checkGO = new GameObject("Check", typeof(RectTransform));
+            checkGO.transform.SetParent(boxGO.transform, false);
+            var checkRT = (RectTransform)checkGO.transform;
+            checkRT.anchorMin = Vector2.zero;
+            checkRT.anchorMax = Vector2.one;
+            checkRT.offsetMin = new Vector2(4f, 4f);
+            checkRT.offsetMax = new Vector2(-4f, -4f);
+            var check = checkGO.AddComponent<Image>();
+            check.color = new Color(0.55f, 0.85f, 1f);
+            check.raycastTarget = false;
+
+            hideMiningLabel = CreateText("Label", go.transform, 13);
+            hideMiningLabel.alignment = TextAnchor.MiddleRight;
+            // Clicks on the label reach the Toggle on the parent, so the whole row is clickable.
+            hideMiningLabel.raycastTarget = true;
+            var labelRT = hideMiningLabel.rectTransform;
+            labelRT.anchorMin = Vector2.zero;
+            labelRT.anchorMax = Vector2.one;
+            labelRT.offsetMin = Vector2.zero;
+            labelRT.offsetMax = new Vector2(-26f, 0f);
+            hideMiningLabel.text = Loc.Get(Loc.HideMining);
+
+            var toggle = go.AddComponent<Toggle>();
+            toggle.targetGraphic = box;
+            toggle.graphic = check;
+            toggle.isOn = Plugin.HideMining.Value;
+            toggle.onValueChanged.AddListener(OnHideMiningChanged);
+        }
+
+        private void OnHideMiningChanged(bool hide)
+        {
+            // BepInEx saves the config file whenever a setting changes.
+            Plugin.HideMining.Value = hide;
+            Refresh();
         }
 
         private void BuildScrollView()
@@ -359,6 +419,7 @@ namespace ProductionSummary
         public void RefreshLabels()
         {
             SetButtonLabel();
+            hideMiningLabel.text = Loc.Get(Loc.HideMining);
             if (gameObject.activeSelf)
             {
                 Refresh();

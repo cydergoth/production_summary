@@ -41,3 +41,5 @@
 022 <par1> giây|
 023 <par1> phút|
 024 <par1> giờ|
+# ---- Checkbox on the Production tab ----------------- |
+025 Ẩn khai thác và tinh luyện|

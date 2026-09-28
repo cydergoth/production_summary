@@ -16,6 +16,7 @@ namespace ProductionSummary
         internal static ConfigEntry<bool> IncludeUndiscovered;
         internal static ConfigEntry<bool> IncludeIdleModules;
         internal static ConfigEntry<float> RefreshSeconds;
+        internal static ConfigEntry<bool> HideMining;
 
         private void Awake()
         {
@@ -26,6 +27,8 @@ namespace ProductionSummary
                 "Also list production modules that have no product selected.");
             RefreshSeconds = Config.Bind("General", "RefreshSeconds", 1f,
                 "How often the Production tab refreshes while it is open.");
+            HideMining = Config.Bind("General", "HideMining", false,
+                "Hide Mining and Refinery modules. Set by the checkbox on the Production tab.");
 
             var harmony = new Harmony(Guid);
             harmony.PatchAll(typeof(DockingUIPatches));

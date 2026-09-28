@@ -41,3 +41,5 @@
 022 <par1>秒|
 023 <par1>分钟|
 024 <par1>小时|
+# ---- Checkbox on the Production tab ----------------- |
+025 隐藏采矿和精炼|

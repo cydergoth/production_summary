@@ -14,6 +14,9 @@ For each base the tab shows:
 - every material needed per cycle and the supply that base can see: its own storage (or the storage it is cargo-linked to), plus your stash for player bases. Green means there is enough for a cycle and red means there isn't. It also shows how many cycles the supply lasts.
 - asteroid resources left, for mining modules
 
+The **Hide mining & refineries** checkbox at the top right of the tab hides Mining and Refinery
+modules, and bases that only mine or refine drop out of the list. The tab remembers the setting.
+
 The tab refreshes every second while it is open. It only reads game data. It never changes stations, stock or your save.
 
 The tab follows the game's language setting (**Setup → Language**). All 12 of the game's languages are included.
@@ -83,6 +86,7 @@ Edit it while the game is closed.
 | `IncludeUndiscoveredBases` | `false` | Also list bases you have not discovered yet |
 | `IncludeIdleModules` | `false` | Also list production modules with no product selected |
 | `RefreshSeconds` | `1` | Refresh interval while the tab is open |
+| `HideMining` | `false` | Hide Mining and Refinery modules. The checkbox on the tab changes this |
 
 ## Translations
 

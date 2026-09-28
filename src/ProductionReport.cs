@@ -85,6 +85,8 @@ namespace ProductionSummary
             var fabricators = station.modules
                 .OfType<SM_Fabricator>()
                 .Where(f => f.producedItemID > 0 || Plugin.IncludeIdleModules.Value)
+                // SM_GeologyBased covers both mining module types: Mining and Refinery.
+                .Where(f => !(Plugin.HideMining.Value && f is SM_GeologyBased))
                 .ToList();
             if (fabricators.Count == 0)
             {
